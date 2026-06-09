@@ -362,9 +362,24 @@
   if (cfg.protect) {
     document.documentElement.style.webkitUserSelect = 'none';
     document.documentElement.style.userSelect = 'none';
+
+    // スマホの長押し（iOS Safari等）での画像保存・コールアウトを抑止
+    var protectStyle = document.createElement('style');
+    protectStyle.textContent =
+      '*{-webkit-touch-callout:none;}' +
+      'img{-webkit-touch-callout:none !important;-webkit-user-select:none;user-select:none;' +
+      '-webkit-user-drag:none;pointer-events:none;}';
+    document.head.appendChild(protectStyle);
+
     document.addEventListener('contextmenu', function (e) { e.preventDefault(); });
     document.addEventListener('dragstart', function (e) { e.preventDefault(); });
     document.addEventListener('selectstart', function (e) { e.preventDefault(); });
+    // 画像の長押し（タッチ長押し）を無効化
+    document.addEventListener('touchstart', function (e) {
+      if (e.target && e.target.tagName === 'IMG' && e.touches && e.touches.length === 1) {
+        e.preventDefault();
+      }
+    }, { passive: false });
     document.addEventListener('keydown', function (e) {
       var k = (e.key || '').toLowerCase();
       if (e.key === 'F12') { e.preventDefault(); }
